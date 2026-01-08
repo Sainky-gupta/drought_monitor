@@ -1,0 +1,52 @@
+body {
+    font-family: Arial;
+    background: #f4f7f8;
+}
+
+nav {
+    background: #2c7a7b;
+    padding: 10px;
+}
+
+nav a {
+    color: white;
+    margin: 10px;
+    text-decoration: none;
+}
+
+.container {
+    padding: 20px;
+}
+
+.result {
+    background: #e6fffa;
+    padding: 15px;
+    margin-top: 15px;
+}
+
+.team {
+    display: flex;
+    gap: 20px;
+}
+
+.member img {
+    width: 120px;
+    border-radius: 50%;
+}
+.predict-form {
+    max-width: 420px;
+}
+
+.predict-form label {
+    font-weight: bold;
+    margin-top: 10px;
+    display: block;
+}
+
+.predict-form input,
+.predict-form select {
+    width: 100%;
+    padding: 8px;
+    margin-bottom: 12px;
+}
+

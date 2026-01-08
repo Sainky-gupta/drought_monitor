@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block content %}
+
+<h2>Our Team</h2>
+
+<div class="team">
+    <div class="member">
+        <img src="{{ url_for('static', filename='images/member1.jpg') }}">
+        <p><b>Member 1</b><br>ML Engineer</p>
+    </div>
+    <div class="member">
+        <img src="{{ url_for('static', filename='images/member2.jpg') }}">
+        <p><b>Member 2</b><br>Backend Developer</p>
+    </div>
+    <div class="member">
+        <img src="{{ url_for('static', filename='images/member3.jpg') }}">
+        <p><b>Member 3</b><br>GIS Specialist</p>
+    </div>
+    <div class="member">
+        <img src="{{ url_for('static', filename='images/member4.jpg') }}">
+        <p><b>Member 4</b><br>Frontend Developer</p>
+    </div>
+</div>
+
+{% endblock %}

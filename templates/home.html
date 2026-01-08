@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% block content %}
+
+<h2>Drought Prediction</h2>
+
+<form method="POST" class="predict-form">
+
+    <!-- District Suggestion -->
+    <label>District</label>
+    <input list="districts" name="district" placeholder="Start typing district" required>
+    <datalist id="districts">
+        {% for d in districts %}
+            <option value="{{ d }}">
+        {% endfor %}
+    </datalist>
+
+    <!-- Year Dropdown -->
+    <label>Year</label>
+    <select name="year" required>
+        <option value="">Select Year</option>
+        {% for y in years %}
+            <option value="{{ y }}">{{ y }}</option>
+        {% endfor %}
+    </select>
+
+    <!-- Month Dropdown -->
+    <label>Month</label>
+    <select name="month" required>
+        <option value="">Select Month</option>
+        {% for m in months %}
+            <option value="{{ m[0] }}">{{ m[1] }}</option>
+        {% endfor %}
+    </select>
+
+    <button type="submit">Predict</button>
+</form>
+
+{% if prediction %}
+<div class="result">
+    <h3>Predicted CDI: {{ prediction }}</h3>
+    <h3>Drought Status: {{ drought }}</h3>
+</div>
+{% endif %}
+
+{% endblock %}
