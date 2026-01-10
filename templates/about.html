@@ -1,18 +1,92 @@
 {% extends "base.html" %}
+
 {% block content %}
 
-<h2>About the Project</h2>
+<div class="page-header">
+    <h1><i class="fas fa-info-circle"></i> About the Project</h1>
+    <p>AI-Powered Agricultural Drought Monitoring System</p>
+</div>
 
-<p>
-This Agricultural Drought Monitoring System predicts drought
-conditions at district level in India using satellite data
-(SPI, NDVI, Soil Moisture) and machine learning.
-</p>
+<div class="content-card">
+    <h2><i class="fas fa-lightbulb"></i> Project Overview</h2>
+    <p>
+        Our Agricultural Drought Monitoring System is an innovative AI-powered platform that predicts 
+        drought conditions at the district level across India. By leveraging satellite data, machine learning, 
+        and advanced analytics, we provide early warning systems that help farmers, policymakers, and 
+        agricultural organizations make informed decisions.
+    </p>
+</div>
 
-<ul>
-    <li>1–2 month early warning</li>
-    <li>District-level prediction</li>
-    <li>Policy & farmer decision support</li>
-</ul>
+<div class="content-card">
+    <h2><i class="fas fa-bullseye"></i> Key Features</h2>
+    <ul>
+        <li><strong>1-2 Month Early Warning:</strong> Predict drought conditions up to 2 months in advance, giving stakeholders time to prepare and mitigate risks.</li>
+        <li><strong>District-Level Precision:</strong> Get granular predictions at the district level for targeted interventions.</li>
+        <li><strong>Multi-Indicator Analysis:</strong> Combines SPI (Standardized Precipitation Index), NDVI (Normalized Difference Vegetation Index), and Soil Moisture data for comprehensive assessment.</li>
+        <li><strong>Interactive Visualizations:</strong> Explore drought conditions through interactive maps and heatmaps across India.</li>
+        <li><strong>Real-time Monitoring:</strong> Access current and historical drought conditions with detailed metrics.</li>
+        <li><strong>Policy & Decision Support:</strong> Enable data-driven decision making for agricultural planning and resource allocation.</li>
+    </ul>
+</div>
+
+<div class="content-card">
+    <h2><i class="fas fa-cogs"></i> Technology Stack</h2>
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem; margin-top: 1rem;">
+        <div style="background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%); padding: 1.5rem; border-radius: 10px;">
+            <h3 style="color: var(--primary-color); margin-bottom: 0.5rem;"><i class="fas fa-brain"></i> Machine Learning</h3>
+            <p style="color: var(--text-light); font-size: 0.9rem;">XGBoost model trained on historical drought data for accurate predictions.</p>
+        </div>
+        <div style="background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%); padding: 1.5rem; border-radius: 10px;">
+            <h3 style="color: var(--primary-color); margin-bottom: 0.5rem;"><i class="fas fa-satellite"></i> Satellite Data</h3>
+            <p style="color: var(--text-light); font-size: 0.9rem;">SPI, NDVI, and Soil Moisture indices from satellite observations.</p>
+        </div>
+        <div style="background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%); padding: 1.5rem; border-radius: 10px;">
+            <h3 style="color: var(--primary-color); margin-bottom: 0.5rem;"><i class="fas fa-code"></i> Web Framework</h3>
+            <p style="color: var(--text-light); font-size: 0.9rem;">Flask-based web application with interactive visualizations.</p>
+        </div>
+        <div style="background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%); padding: 1.5rem; border-radius: 10px;">
+            <h3 style="color: var(--primary-color); margin-bottom: 0.5rem;"><i class="fas fa-map"></i> GIS Integration</h3>
+            <p style="color: var(--text-light); font-size: 0.9rem;">Leaflet.js for interactive map visualizations and heatmaps.</p>
+        </div>
+    </div>
+</div>
+
+<div class="content-card">
+    <h2><i class="fas fa-chart-line"></i> Methodology</h2>
+    <p>
+        Our system uses a Composite Drought Index (CDI) that combines multiple indicators:
+    </p>
+    <ul>
+        <li><strong>SPI (Standardized Precipitation Index):</strong> Measures precipitation anomalies over different time scales (1-month and 3-month).</li>
+        <li><strong>NDVI Anomaly:</strong> Tracks vegetation health and greenness compared to historical averages.</li>
+        <li><strong>Soil Moisture Deficit:</strong> Monitors soil water content, critical for crop health.</li>
+    </ul>
+    <p>
+        These indicators are normalized and combined using machine learning algorithms to generate 
+        accurate drought predictions. The system classifies drought conditions into four categories: 
+        Normal, Mild Drought, Moderate Drought, and Severe Drought.
+    </p>
+</div>
+
+<div class="content-card">
+    <h2><i class="fas fa-users"></i> Impact & Applications</h2>
+    <ul>
+        <li><strong>Farmers:</strong> Plan crop selection, irrigation, and resource allocation based on predicted conditions.</li>
+        <li><strong>Government Agencies:</strong> Allocate resources, plan relief measures, and implement drought mitigation strategies.</li>
+        <li><strong>Agricultural Organizations:</strong> Make data-driven decisions for crop insurance and support programs.</li>
+        <li><strong>Researchers:</strong> Study drought patterns and climate change impacts on agriculture.</li>
+    </ul>
+</div>
+
+<div class="content-card">
+    <h2><i class="fas fa-rocket"></i> Future Enhancements</h2>
+    <ul>
+        <li>Integration with weather forecast APIs for real-time updates</li>
+        <li>Mobile application for field-level access</li>
+        <li>Automated alert system via SMS and email</li>
+        <li>Historical trend analysis and forecasting</li>
+        <li>Integration with crop-specific recommendations</li>
+    </ul>
+</div>
 
 {% endblock %}

@@ -1,22 +1,40 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Drought Monitoring System</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Drought Monitoring System - AI-Powered Agricultural Drought Prediction</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    {% block extra_head %}{% endblock %}
 </head>
 <body>
 
 <nav>
-    <a href="/">Home</a>
-    <a href="/map">Map</a>
-    <a href="/about">About</a>
-    <a href="/team">Team</a>
-    <a href="/contact">Contact</a>
+    <div class="nav-container">
+        <a href="/" class="logo">
+            <i class="fas fa-tint"></i> Drought Monitor
+        </a>
+        <ul class="nav-links">
+            <li><a href="/"><i class="fas fa-home"></i> Home</a></li>
+            <li><a href="/map"><i class="fas fa-map"></i> Map</a></li>
+            <li><a href="/about"><i class="fas fa-info-circle"></i> About</a></li>
+            <li><a href="/team"><i class="fas fa-users"></i> Team</a></li>
+            <li><a href="/contact"><i class="fas fa-envelope"></i> Contact</a></li>
+        </ul>
+    </div>
 </nav>
 
 <div class="container">
     {% block content %}{% endblock %}
 </div>
+
+<footer>
+    <p>&copy; 2024 Drought Monitoring System. Powered by AI & Machine Learning.</p>
+    <p>Helping farmers and policymakers make informed decisions.</p>
+</footer>
+
+{% block extra_scripts %}{% endblock %}
 
 </body>
 </html>

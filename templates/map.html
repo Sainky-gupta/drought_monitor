@@ -1,12 +1,493 @@
 {% extends "base.html" %}
+
+{% block extra_head %}
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<style>
+    .info {
+        padding: 6px 8px;
+        font: 14px/16px Arial, Helvetica, sans-serif;
+        background: white;
+        background: rgba(255,255,255,0.8);
+        box-shadow: 0 0 15px rgba(0,0,0,0.2);
+        border-radius: 5px;
+    }
+    .info h4 {
+        margin: 0 0 5px;
+        color: #777;
+    }
+    .legend {
+        line-height: 18px;
+        color: #555;
+    }
+    .legend i {
+        width: 18px;
+        height: 18px;
+        float: left;
+        margin-right: 8px;
+        opacity: 0.7;
+    }
+    .map-controls {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1rem;
+        align-items: center;
+        margin-bottom: 1rem;
+        padding: 1rem;
+        background: white;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    .control-group {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    .control-group label {
+        margin: 0;
+        white-space: nowrap;
+    }
+    .control-group select {
+        padding: 0.5rem;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+    }
+    #map {
+        height: 600px;
+        width: 100%;
+        border-radius: 8px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    .prediction-badge {
+        display: inline-block;
+        padding: 2px 6px;
+        background: #fbbf24;
+        color: #000;
+        border-radius: 3px;
+        font-size: 0.75rem;
+        font-weight: bold;
+        margin-left: 5px;
+    }
+</style>
+{% endblock %}
+
 {% block content %}
 
-<h2>India District Drought Heatmap</h2>
-
-<div id="map">
-    <p>District-wise drought heatmap visualization</p>
+<div class="page-header">
+    <h1><i class="fas fa-map-marked-alt"></i> India Drought Heatmap</h1>
+    <p>Interactive district-wise drought condition visualization across India</p>
 </div>
 
-<script src="{{ url_for('static', filename='js/map.js') }}"></script>
+<div class="map-container">
+    <div class="map-controls">
+        <div class="control-group">
+            <label><i class="fas fa-calendar"></i> Time Period:</label>
+            <select id="yearFilter">
+                {% for year in years %}
+                    <option value="{{ year }}" {% if year == latest_year %}selected{% endif %}>{{ year }}</option>
+                {% endfor %}
+            </select>
+            <select id="monthFilter">
+                {% for month_num, month_name in months %}
+                    <option value="{{ month_num }}" {% if month_num == latest_month and latest_year in years %}selected{% endif %}>{{ month_name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="control-group">
+            <label><i class="fas fa-filter"></i> Filter by:</label>
+            <select id="stateFilter">
+                <option value="">All States</option>
+            </select>
+            <select id="droughtFilter">
+                <option value="">All Conditions</option>
+                <option value="normal">Normal</option>
+                <option value="mild">Mild Drought</option>
+                <option value="moderate">Moderate Drought</option>
+                <option value="severe">Severe Drought</option>
+            </select>
+        </div>
+        <button class="btn" onclick="loadMapData()" style="max-width: 200px; padding: 0.5rem 1rem;">
+            <i class="fas fa-sync"></i> Update Map
+        </button>
+    </div>
 
+    <div id="map"></div>
+
+    <div class="map-legend">
+        <div class="legend-item">
+            <div class="legend-color" style="background: #10b981;"></div>
+            <span>Normal</span>
+        </div>
+        <div class="legend-item">
+            <div class="legend-color" style="background: #fbbf24;"></div>
+            <span>Mild Drought</span>
+        </div>
+        <div class="legend-item">
+            <div class="legend-color" style="background: #f97316;"></div>
+            <span>Moderate Drought</span>
+        </div>
+        <div class="legend-item">
+            <div class="legend-color" style="background: #dc2626;"></div>
+            <span>Severe Drought</span>
+        </div>
+    </div>
+</div>
+
+<div class="content-card">
+    <h2><i class="fas fa-info-circle"></i> Map Information</h2>
+    <p>This interactive heatmap shows drought conditions across all districts in India. You can select different years and months to view historical data or predicted conditions.</p>
+    <ul>
+        <li><strong>Green:</strong> Normal conditions - No drought risk (CDI > -0.5)</li>
+        <li><strong>Yellow:</strong> Mild drought - Slight water stress (-1.0 < CDI ≤ -0.5)</li>
+        <li><strong>Orange:</strong> Moderate drought - Moderate water stress (-1.5 < CDI ≤ -1.0)</li>
+        <li><strong>Red:</strong> Severe drought - Critical water stress (CDI ≤ -1.5)</li>
+    </ul>
+    <p><strong>Data Sources:</strong></p>
+    <ul>
+        <li>Historical years (2015-2021): Real data from <code>map_composite_drought_index.csv</code></li>
+        <li>Future years: AI model predictions (marked with "PREDICTED" badge)</li>
+    </ul>
+    <p>Click on any district to view detailed information including CDI value, rainfall (SPI-3), vegetation (NDVI), and soil moisture indicators. The circle size represents the severity of drought conditions.</p>
+</div>
+
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+    // Initialize map centered on India
+    const map = L.map('map').setView([20.5937, 78.9629], 5);
+
+    // Add OpenStreetMap tiles
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '© OpenStreetMap contributors',
+        maxZoom: 10
+    }).addTo(map);
+
+    // Create layers for different visualization modes
+    const markers = L.layerGroup().addTo(map);
+    const circles = L.layerGroup().addTo(map);
+
+    // Drought class colors
+    const droughtColors = {
+        'normal': '#10b981',
+        'mild': '#fbbf24',
+        'moderate': '#f97316',
+        'severe': '#dc2626'
+    };
+
+    // Get color based on CDI value
+    function getDroughtColor(cdi) {
+        if (cdi <= -1.5) return droughtColors.severe;
+        if (cdi <= -1.0) return droughtColors.moderate;
+        if (cdi <= -0.5) return droughtColors.mild;
+        return droughtColors.normal;
+    }
+
+    // Get drought class name
+    function getDroughtClass(cdi) {
+        if (cdi <= -1.5) return 'Severe Drought';
+        if (cdi <= -1.0) return 'Moderate Drought';
+        if (cdi <= -0.5) return 'Mild Drought';
+        return 'Normal';
+    }
+
+    // District coordinate lookup (approximate centers for heatmap visualization)
+    // In production, you would use a GeoJSON file with precise district boundaries
+    const districtCoordinates = {};
+    
+    // State centers for approximate district placement
+    const stateCenters = {
+        'Andhra Pradesh': [15.9129, 79.7400],
+        'Assam': [26.2006, 92.9376],
+        'Bihar': [25.0961, 85.3131],
+        'Chhattisgarh': [21.2787, 81.8661],
+        'Gujarat': [23.0225, 72.5714],
+        'Haryana': [29.0588, 76.0856],
+        'Himachal Pradesh': [31.1048, 77.1734],
+        'Jharkhand': [23.6102, 85.2799],
+        'Karnataka': [15.3173, 75.7139],
+        'Kerala': [10.8505, 76.2711],
+        'Madhya Pradesh': [22.9734, 78.6569],
+        'Maharashtra': [19.7515, 75.7139],
+        'Punjab': [30.7333, 76.7794],
+        'Rajasthan': [27.0238, 74.2179],
+        'Tamil Nadu': [11.1271, 78.6569],
+        'Uttar Pradesh': [26.8467, 80.9462],
+        'Uttarakhand': [30.0668, 79.0193],
+        'West Bengal': [22.9868, 87.8550],
+        'Odisha': [20.9517, 85.0985],
+        'Telangana': [18.1124, 79.0193],
+        'Manipur': [24.6637, 93.9063],
+        'Meghalaya': [25.4670, 91.3662],
+        'Mizoram': [23.1645, 92.9376],
+        'Nagaland': [26.1584, 94.5624],
+        'Tripura': [23.9408, 91.9882],
+        'Goa': [15.2993, 74.1240],
+        'Sikkim': [27.5330, 88.5122],
+        'Arunachal Pradesh': [28.2180, 94.7278],
+        'Delhi': [28.6139, 77.2090],
+        'Puducherry': [11.9416, 79.8083],
+        'Chandigarh': [30.7333, 76.7794],
+        'Dadra and Nagar Haveli': [20.1809, 73.0169],
+        'Daman and Diu': [20.4283, 72.8397],
+        'Lakshadweep': [10.5667, 72.6417],
+        'Andaman and Nicobar Islands': [11.7401, 92.6586]
+    };
+    
+    function getDistrictCoordinates(district, state) {
+        // Check if we have cached coordinates
+        const key = `${district}_${state}`;
+        if (districtCoordinates[key]) {
+            return districtCoordinates[key];
+        }
+        
+        // Generate approximate coordinates based on state center and district hash
+        const stateCenter = stateCenters[state] || [20.5937, 78.9629];
+        
+        // Create a deterministic offset based on district name for consistent positioning
+        let hash = 0;
+        for (let i = 0; i < district.length; i++) {
+            hash = district.charCodeAt(i) + ((hash << 5) - hash);
+        }
+        
+        const latOffset = ((hash % 1000) / 1000 - 0.5) * 3; // -1.5 to 1.5 degrees
+        const lngOffset = (((hash * 7) % 1000) / 1000 - 0.5) * 3;
+        
+        const coords = [
+            stateCenter[0] + latOffset,
+            stateCenter[1] + lngOffset
+        ];
+        
+        districtCoordinates[key] = coords;
+        return coords;
+    }
+    
+    function getCircleRadius(cdi) {
+        // Larger radius for more severe drought conditions
+        const baseRadius = 30000; // 30km base radius
+        const severity = Math.abs(Math.min(0, cdi)); // How negative (more severe)
+        return baseRadius + (severity * 20000); // Scale with severity
+    }
+
+    // Load map data
+    async function loadMapData() {
+        markers.clearLayers();
+        circles.clearLayers();
+        
+        const yearFilter = document.getElementById('yearFilter');
+        const monthFilter = document.getElementById('monthFilter');
+        
+        if (!yearFilter || !monthFilter) {
+            console.error('Year or Month filter elements not found');
+            alert('Map controls not initialized. Please refresh the page.');
+            return;
+        }
+        
+        const year = parseInt(yearFilter.value);
+        const month = parseInt(monthFilter.value);
+        
+        if (!year || !month || isNaN(year) || isNaN(month)) {
+            console.error('Invalid year or month values:', { year, month, yearValue: yearFilter.value, monthValue: monthFilter.value });
+            alert('Please select both year and month.');
+            return;
+        }
+        
+        console.log('Loading map data for:', { year, month });
+        
+        try {
+            const url = `/api/map-data?year=${year}&month=${month}`;
+            console.log('Fetching from:', url);
+            const response = await fetch(url);
+            
+            // Check if response is OK
+            if (!response.ok) {
+                const errorText = await response.text();
+                console.error('HTTP Error:', response.status, errorText);
+                try {
+                    const errorData = JSON.parse(errorText);
+                    alert(`Error loading map data: ${errorData.error || 'Unknown error'}`);
+                } catch {
+                    alert(`Error loading map data: HTTP ${response.status}. ${errorText}`);
+                }
+                return;
+            }
+            
+            const data = await response.json();
+            console.log('Received data:', data.length, 'districts');
+            
+            // Check if data is an array (success) or error object
+            if (!Array.isArray(data)) {
+                if (data && data.error) {
+                    console.error('API Error:', data.error);
+                    alert('Error: ' + data.error);
+                    return;
+                }
+                console.error('Unexpected response format:', data);
+                alert('Unexpected response format. Please check the console for details.');
+                return;
+            }
+            
+            if (data.length === 0) {
+                alert('No data available for the selected year and month.');
+                return;
+            }
+
+            // Populate state filter
+            const states = [...new Set(data.map(d => d.state))].sort();
+            const stateFilter = document.getElementById('stateFilter');
+            const currentState = stateFilter.value;
+            
+            stateFilter.innerHTML = '<option value="">All States</option>';
+            states.forEach(state => {
+                const option = document.createElement('option');
+                option.value = state;
+                option.textContent = state;
+                if (state === currentState) option.selected = true;
+                stateFilter.appendChild(option);
+            });
+
+            // Filter data
+            const stateFilterValue = document.getElementById('stateFilter').value;
+            const droughtFilterValue = document.getElementById('droughtFilter').value;
+            
+            const filteredData = data.filter(d => {
+                const stateMatch = !stateFilterValue || d.state === stateFilterValue;
+                const droughtMatch = !droughtFilterValue || d.drought_class_name === droughtFilterValue;
+                return stateMatch && droughtMatch;
+            });
+
+            // Create heatmap-style visualization with circles
+            let processedCount = 0;
+            filteredData.forEach(item => {
+                try {
+                    if (!item.district || !item.state || item.cdi === undefined) {
+                        console.warn('Skipping item with missing data:', item);
+                        return;
+                    }
+                    
+                    const coords = getDistrictCoordinates(item.district, item.state);
+                    const color = getDroughtColor(item.cdi);
+                    const radius = getCircleRadius(item.cdi);
+                    
+                    // Create semi-transparent circle for heatmap effect
+                    const circle = L.circle(coords, {
+                        radius: radius,
+                        fillColor: color,
+                        color: color,
+                        weight: 1,
+                        opacity: 0.8,
+                        fillOpacity: 0.4
+                    }).addTo(circles);
+                    
+                    // Create marker for precise interaction
+                    const icon = L.divIcon({
+                        className: 'custom-marker',
+                        html: `<div style="background-color: ${color}; width: 16px; height: 16px; border-radius: 50%; border: 2px solid white; box-shadow: 0 2px 4px rgba(0,0,0,0.5);"></div>`,
+                        iconSize: [16, 16],
+                        iconAnchor: [8, 8]
+                    });
+
+                    const marker = L.marker(coords, { icon: icon }).addTo(markers);
+                    
+                    const predictionBadge = item.is_prediction ? '<span class="prediction-badge">PREDICTED</span>' : '';
+                    const popupContent = `
+                        <div style="min-width: 250px;">
+                            <h3 style="margin: 0 0 10px; color: ${color};">
+                                ${item.district || 'Unknown'} ${predictionBadge}
+                            </h3>
+                            <p style="margin: 5px 0;"><strong>State:</strong> ${item.state || 'Unknown'}</p>
+                            <p style="margin: 5px 0;"><strong>Drought Class:</strong> <span style="color: ${color}; font-weight: bold;">${item.drought_class || 'Unknown'}</span></p>
+                            <p style="margin: 5px 0;"><strong>CDI:</strong> ${item.cdi !== undefined ? item.cdi : 'N/A'}</p>
+                            <p style="margin: 5px 0;"><strong>Period:</strong> ${getMonthName(item.month || 1)} ${item.year || 'N/A'}</p>
+                            ${item.rainfall !== undefined ? `
+                            <hr style="margin: 10px 0; border: none; border-top: 1px solid #eee;">
+                            <p style="margin: 5px 0; font-size: 0.9em;"><strong>Rainfall:</strong> ${item.rainfall}% (SPI-3: ${item.spi_3 || 'N/A'})</p>
+                            <p style="margin: 5px 0; font-size: 0.9em;"><strong>Vegetation:</strong> ${item.vegetation}% (NDVI: ${item.ndvi || 'N/A'})</p>
+                            <p style="margin: 5px 0; font-size: 0.9em;"><strong>Soil Moisture:</strong> ${item.soil_moisture}% (Deficit: ${item.sm_deficit || 'N/A'})</p>
+                            ` : ''}
+                        </div>
+                    `;
+                    
+                    marker.bindPopup(popupContent);
+                    circle.bindPopup(popupContent);
+                    processedCount++;
+                } catch (error) {
+                    console.error('Error processing district item:', item, error);
+                    // Continue processing other items
+                }
+            });
+            
+            console.log(`Successfully processed ${processedCount} out of ${filteredData.length} districts`);
+
+            if (processedCount === 0) {
+                console.warn('No districts were successfully processed');
+                alert('No districts could be displayed. Please check the console for errors.');
+                return;
+            }
+
+            // Fit map to show all markers and circles
+            if (processedCount > 0) {
+                try {
+                    // Manually collect coordinates to avoid getBounds() issues
+                    const coordinates = [];
+                    
+                    markers.eachLayer(function(layer) {
+                        try {
+                            // Only process markers that have getLatLng method
+                            if (layer && typeof layer.getLatLng === 'function') {
+                                const latlng = layer.getLatLng();
+                                if (latlng && typeof latlng.lat === 'number' && typeof latlng.lng === 'number') {
+                                    coordinates.push([latlng.lat, latlng.lng]);
+                                }
+                            }
+                        } catch (e) {
+                            console.warn('Error getting coordinates from marker:', e);
+                        }
+                    });
+                    
+                    if (coordinates.length > 0) {
+                        // Create bounds manually from coordinates
+                        const lats = coordinates.map(c => c[0]);
+                        const lngs = coordinates.map(c => c[1]);
+                        const bounds = L.latLngBounds(
+                            [Math.min(...lats), Math.min(...lngs)],
+                            [Math.max(...lats), Math.max(...lngs)]
+                        );
+                        
+                        map.fitBounds(bounds, { padding: [50, 50], maxZoom: 7 });
+                        console.log('Map bounds fitted to', coordinates.length, 'coordinates');
+                    } else {
+                        // No valid coordinates found, use default view
+                        console.warn('No valid coordinates found, using default view');
+                        map.setView([20.5937, 78.9629], 5);
+                    }
+                } catch (boundsError) {
+                    console.error('Error fitting bounds:', boundsError);
+                    console.error('Error stack:', boundsError.stack);
+                    // Fallback to default India view if bounds calculation fails
+                    map.setView([20.5937, 78.9629], 5);
+                }
+            }
+        } catch (error) {
+            console.error('Error loading map data:', error);
+            console.error('Error stack:', error.stack);
+            alert(`Error loading map data: ${error.message || 'Unknown error'}. Please check the browser console (F12) for more details.`);
+        }
+    }
+
+    function getMonthName(month) {
+        const months = ['', 'January', 'February', 'March', 'April', 'May', 'June',
+                       'July', 'August', 'September', 'October', 'November', 'December'];
+        return months[month] || month;
+    }
+
+    // Filter change handlers
+    document.getElementById('yearFilter').addEventListener('change', loadMapData);
+    document.getElementById('monthFilter').addEventListener('change', loadMapData);
+    document.getElementById('stateFilter').addEventListener('change', loadMapData);
+    document.getElementById('droughtFilter').addEventListener('change', loadMapData);
+
+    // Load data on page load
+    loadMapData();
+</script>
 {% endblock %}

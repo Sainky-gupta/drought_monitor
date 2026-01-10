@@ -1,9 +1,91 @@
 {% extends "base.html" %}
+
 {% block content %}
 
-<h2>Contact Us</h2>
+<div class="page-header">
+    <h1><i class="fas fa-envelope"></i> Contact Us</h1>
+    <p>Get in touch with our team</p>
+</div>
 
-<p>Email: drought.ai.team@gmail.com</p>
-<p>GitHub: github.com/drought-ai</p>
+<div class="contact-info">
+    <div class="contact-item">
+        <div style="font-size: 3rem; color: var(--primary-color); margin-bottom: 1rem;">
+            <i class="fas fa-envelope"></i>
+        </div>
+        <h3>Email</h3>
+        <p>drought.ai.team@gmail.com</p>
+        <p style="font-size: 0.9rem; color: var(--text-light); margin-top: 0.5rem;">
+            For inquiries, partnerships, or support
+        </p>
+    </div>
+
+    <div class="contact-item">
+        <div style="font-size: 3rem; color: var(--primary-color); margin-bottom: 1rem;">
+            <i class="fab fa-github"></i>
+        </div>
+        <h3>GitHub</h3>
+        <p>github.com/drought-ai</p>
+        <p style="font-size: 0.9rem; color: var(--text-light); margin-top: 0.5rem;">
+            Check out our open-source contributions
+        </p>
+    </div>
+
+    <div class="contact-item">
+        <div style="font-size: 3rem; color: var(--primary-color); margin-bottom: 1rem;">
+            <i class="fas fa-code-branch"></i>
+        </div>
+        <h3>Contribute</h3>
+        <p>Open Source Project</p>
+        <p style="font-size: 0.9rem; color: var(--text-light); margin-top: 0.5rem;">
+            We welcome contributions and feedback
+        </p>
+    </div>
+</div>
+
+<div class="content-card">
+    <h2><i class="fas fa-comments"></i> Get Involved</h2>
+    <p>
+        We're always looking to improve our drought monitoring system and welcome feedback, 
+        suggestions, and contributions from the community. Whether you're a researcher, 
+        developer, farmer, or policymaker, your input is valuable to us.
+    </p>
+    <ul>
+        <li>Report bugs or suggest features</li>
+        <li>Contribute to our open-source codebase</li>
+        <li>Share your use cases and success stories</li>
+        <li>Collaborate on research and development</li>
+        <li>Provide feedback on data accuracy and predictions</li>
+    </ul>
+</div>
+
+<div class="content-card">
+    <h2><i class="fas fa-question-circle"></i> Frequently Asked Questions</h2>
+    
+    <div style="margin-top: 1.5rem;">
+        <h3 style="color: var(--primary-color); margin-bottom: 0.5rem;">How accurate are the predictions?</h3>
+        <p style="color: var(--text-light); margin-bottom: 1.5rem;">
+            Our model is trained on historical data and achieves high accuracy. However, 
+            predictions should be used as guidance alongside local knowledge and expert advice.
+        </p>
+
+        <h3 style="color: var(--primary-color); margin-bottom: 0.5rem;">How often is the data updated?</h3>
+        <p style="color: var(--text-light); margin-bottom: 1.5rem;">
+            The system uses the latest available satellite data. Updates depend on data 
+            availability from satellite sources, typically monthly.
+        </p>
+
+        <h3 style="color: var(--primary-color); margin-bottom: 0.5rem;">Can I use this for commercial purposes?</h3>
+        <p style="color: var(--text-light); margin-bottom: 1.5rem;">
+            Please contact us for commercial licensing and usage terms. We support both 
+            academic and commercial applications.
+        </p>
+
+        <h3 style="color: var(--primary-color); margin-bottom: 0.5rem;">How can I integrate this into my system?</h3>
+        <p style="color: var(--text-light); margin-bottom: 1.5rem;">
+            We provide API endpoints for integration. Contact us for API documentation 
+            and access credentials.
+        </p>
+    </div>
+</div>
 
 {% endblock %}
