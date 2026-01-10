@@ -20,7 +20,7 @@ for state in STATES:
     state_district_map[state] = districts_in_state
 
 CURRENT_YEAR = datetime.now().year
-YEARS = list(range(2015, CURRENT_YEAR + 5))
+YEARS = list(range(2015, 2023))
 
 MONTHS = [
     (1, "January"), (2, "February"), (3, "March"),
