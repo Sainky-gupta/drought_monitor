@@ -7,10 +7,31 @@
     <p>Meet the talented individuals behind the Drought Monitoring System</p>
 </div>
 
+<style>
+    .team-photo {
+        width: 150px;
+        height: 150px;
+        border-radius: 50%;
+        overflow: hidden;
+        margin: 0 auto 1rem;
+        box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
+        background: #f1f1f1;
+    }
+
+    .team-photo img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover; /* 🔥 ensures perfect circular fit */
+        display: block;
+    }
+</style>
+
 <div class="team-grid">
+
+    <!-- Member 1 -->
     <div class="team-member">
-        <div style="width: 150px; height: 150px; border-radius: 50%; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); display: flex; align-items: center; justify-content: center; margin: 0 auto 1rem; font-size: 3rem; color: white;">
-            <i class="fas fa-user"></i>
+        <div class="team-photo">
+            <img src="{{ url_for('static', filename='images/team/img_manish.jpeg') }}" alt="Data Scientist">
         </div>
         <h3>Data Scientist</h3>
         <p>Machine Learning & AI</p>
@@ -19,20 +40,22 @@
         </p>
     </div>
 
+    <!-- Member 2 -->
     <div class="team-member">
-        <div style="width: 150px; height: 150px; border-radius: 50%; background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); display: flex; align-items: center; justify-content: center; margin: 0 auto 1rem; font-size: 3rem; color: white;">
-            <i class="fas fa-user"></i>
+        <div class="team-photo">
+            <img src="{{ url_for('static', filename='images/team/img_sainky2.jpeg') }}" alt="Backend Developer">
         </div>
-        <h3>Backend Developer</h3>
-        <p>API & Server Architecture</p>
+        <h3>Data Scientist</h3>
+        <p>Machine Learning & AI</p>
         <p style="font-size: 0.85rem; color: var(--text-light); margin-top: 0.5rem;">
-            Builds robust APIs and data processing pipelines
+            Specializes in time series forecasting and drought prediction models
         </p>
     </div>
 
+    <!-- Member 3 -->
     <div class="team-member">
-        <div style="width: 150px; height: 150px; border-radius: 50%; background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); display: flex; align-items: center; justify-content: center; margin: 0 auto 1rem; font-size: 3rem; color: white;">
-            <i class="fas fa-user"></i>
+        <div class="team-photo">
+            <img src="{{ url_for('static', filename='images/team/img_aayush.jpeg') }}" alt="GIS Specialist">
         </div>
         <h3>GIS Specialist</h3>
         <p>Geospatial Analysis</p>
@@ -41,9 +64,10 @@
         </p>
     </div>
 
+    <!-- Member 4 -->
     <div class="team-member">
-        <div style="width: 150px; height: 150px; border-radius: 50%; background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%); display: flex; align-items: center; justify-content: center; margin: 0 auto 1rem; font-size: 3rem; color: white;">
-            <i class="fas fa-user"></i>
+        <div class="team-photo">
+            <img src="{{ url_for('static', filename='images/team/img_salmali.jpeg') }}" alt="Frontend Developer">
         </div>
         <h3>Frontend Developer</h3>
         <p>UI/UX Design</p>
@@ -51,19 +75,21 @@
             Creates intuitive and beautiful user interfaces
         </p>
     </div>
+
 </div>
 
 <div class="content-card" style="margin-top: 2rem;">
     <h2><i class="fas fa-handshake"></i> Collaboration</h2>
     <p>
-        Our team brings together expertise from machine learning, software engineering, geospatial analysis, 
-        and user experience design. We are passionate about using technology to solve real-world agricultural 
-        challenges and help build a more resilient farming community.
+        Our team brings together expertise from machine learning, software engineering,
+        geospatial analysis, and user experience design. We are passionate about using
+        technology to solve real-world agricultural challenges and help build a more
+        resilient farming community.
     </p>
     <p>
-        This project was developed as part of a hackathon focused on agricultural innovation and climate 
-        resilience. We believe in open collaboration and continuous improvement to make our system more 
-        accurate and useful for farmers and policymakers.
+        This project was developed as part of a hackathon focused on agricultural innovation
+        and climate resilience. We believe in open collaboration and continuous improvement
+        to make our system more accurate and useful for farmers and policymakers.
     </p>
 </div>
 
